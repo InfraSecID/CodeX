@@ -1,0 +1,47 @@
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+
+# --- Ollama / model files (huge, don't commit) ---
+*.gguf
+*.bin
+models/
+Modelfile.local
+
+# --- Docker ---
+.docker/
+docker-compose.override.yml
+
+# --- Build output ---
+dist/
+build/
+out/
+*.log
