@@ -1,3 +1,7 @@
+![CI](https://github.com/InfraSecID/CodeX/actions/workflows/ci.yml/badge.svg)
+![GitHub release](https://img.shields.io/github/v/release/InfraSecID/CodeX?style=flat-square)
+![GitHub stars](https://img.shields.io/github/stars/InfraSecID/CodeX?style=flat-square)
+![License](https://img.shields.io/github/license/InfraSecID/CodeX?style=flat-square)
 # CodeX — Offline AI Coding Assistant
 
 > Offline AI coding assistant persona.
