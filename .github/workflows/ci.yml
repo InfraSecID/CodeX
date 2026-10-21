@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          additional_files: 'setup.sh'
+
+      - name: Validate YAML
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('docker-compose.yml'))"
+          python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"
+
+      - name: Validate Makefile
+        run: make help
+
+      - name: Check file permissions
+        run: |
+          test -x setup.sh || (echo "❌ setup.sh not executable" && exit 1)
+          test -x split.py || (echo "❌ split.py not executable" && exit 1)
+          echo "✅ All scripts executable"

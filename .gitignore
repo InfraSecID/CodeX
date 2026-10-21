@@ -45,3 +45,9 @@ dist/
 build/
 out/
 *.log
+# --- v1.1.0 additions ---
+.ollama/
+work/
+*.tgz
+*.tar.gz
+.pre-commit-config.yaml.bak

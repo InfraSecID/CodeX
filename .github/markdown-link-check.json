@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://github.com/InfraSecID/CodeX/(pull|issues)"
+    },
+    {
+      "pattern": "^http://localhost"
+    }
+  ],
+  "timeout": "20s",
+  "retryOn429": true,
+  "retryCount": 3
+}

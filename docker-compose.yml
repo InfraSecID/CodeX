@@ -1,0 +1,30 @@
+# ============================================================
+#  CodeX — Docker Compose
+#  Usage: docker compose up -d
+# ============================================================
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: codex-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codex-sandbox
+    network_mode: none
+    volumes:
+      - ./work:/work
+    stdin_open: true
+    tty: true
+    profiles: ["sandbox"]
+
+volumes:
+  ollama_data:
+    driver: local
