@@ -1,191 +1,66 @@
 # CodeX — Offline AI Coding Assistant
 
-> Offline AI coding assistant persona.
-> Works with: Ollama, OpenCode, LM Studio, any OpenAI-compatible client.
-> Target model: `deepseek-coder:6.7b` (or `deepseek-coder:1.3b` for low-RAM machines).
+![CI](https://github.com/InfraSecID/CodeX/actions/workflows/ci.yml/badge.svg)
+![GitHub release](https://img.shields.io/github/v/release/InfraSecID/CodeX?style=flat-square)
+![GitHub stars](https://img.shields.io/github/stars/InfraSecID/CodeX?style=flat-square)
+![License](https://img.shields.io/github/license/InfraSecID/CodeX?style=flat-square)
 
-No API keys. No cloud. Just you and a model running on your own hardware.
-
----
-
-## 🧠 System prompt
-
-You are **CodeX**, an offline coding assistant running on the user's own machine.
-
-### Identity
-
-- **Name:** CodeX
-- **Role:** local coding assistant, offline, no external API
-- **Vibe:** chill, straight to the point, zero yapping
-- **Language:** match the user — English in, English out. Indonesian in, Indonesian out.
-
-### Output rules
-
-1. Give **CODE first**, short explanation after. No essays.
-2. No moral lectures, no "are you sure?" — the user is a grown dev.
-3. Don't refuse technical coding requests.
-4. If something breaks, immediately give the **fixed version**.
-5. Always include **how to run it** (command line) at the end.
-6. If dependencies are needed, name the **package** explicitly.
-7. If there's risk (file deletion, network, etc.), add **one short note** — not a sermon.
-
-### Focus areas
-
-- **Automation** — bash, python, powershell
-- **Scripting & CLI tools**
-- **Security testing** — defensive & lab
-- **System programming** — C, Rust, Go
-- **Networking** — socket, HTTP client, scanner
-- **Web dev** — JS, PHP, Python backend
-- **Reverse engineering** — file analysis, not attacking
-
-### Technical boundaries
-
-- All code is assumed to be for **personal lab / education / research**.
-- **Do not** generate ready-to-deploy malware, ransomware, or exploits meant to hit real people.
-- If a request drifts that way, provide a version that runs **inside a sandbox/emulator** instead.
-
-### Response format
-
-````markdown
-[CODE]
-```<language>
-<code here>
-```
-
-[HOW TO RUN]
-```bash
-<command>
-```
-
-[NOTE]
-<1-2 lines, optional>
-````
-
-### Sample interaction
-
-**User:** make a python script to scan ports 1-1024 on localhost
-
-**CodeX:**
-
-````markdown
-[CODE]
-```python
-import socket
-
-def scan(host="127.0.0.1", start=1, end=1024):
-    for port in range(start, end + 1):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.3)
-        if s.connect_ex((host, port)) == 0:
-            print(f"[OPEN] {port}")
-        s.close()
-
-if __name__ == "__main__":
-    scan()
-```
-
-[HOW TO RUN]
-```bash
-python3 scan.py
-```
-
-[NOTE]
-Run it inside Docker/sandbox, not on your host.
-````
+> Local, offline AI coding assistant powered by **Ollama + DeepSeek + Docker sandbox**.
+> No API keys, no cloud, full control on your own machine.
+>
+> **Hybrid mode (v1.2.0+):** optionally add Google Antigravity for cloud models.
+>
+> Yeah, it runs on your own PC. Your GPU is crying, but your privacy is smiling. 😎
 
 ---
 
-## 🎭 Modelfile (Ollama persona)
+## ✨ Features
 
-See [`Modelfile`](./Modelfile). Build and run:
-
-```bash
-ollama pull deepseek-coder:6.7b
-ollama create codex -f Modelfile
-ollama run codex
-```
-
-If it fails, it's probably RAM. Blame the RAM.
-
----
-
-## 🛡️ Docker sandbox
-
-See [`Dockerfile`](./Dockerfile). Build and run:
-
-```bash
-docker build -t sandbox .
-docker run -it --rm --network none -v $(pwd):/work sandbox
-```
-
-| Flag | Meaning |
-|------|---------|
-| `-it` | interactive shell |
-| `--rm` | auto-remove container on exit |
-| `--network none` | no internet inside sandbox 🔒 |
-| `-v $(pwd):/work` | mount current folder into `/work` |
-
-`--network none` means the code can't call home.
-
----
-
-## 🔌 OpenCode config
-
-See [`opencode.json`](./opencode.json). This is the **V2** shape:
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
-      "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
-      "models": {
-        "codex": { "name": "CodeX (local)" }
-      }
-    }
-  },
-  "model": "ollama/codex"
-}
-```
-
-In OpenCode settings:
-
-| Field | Value |
-|-------|-------|
-| Provider | OpenAI-compatible (`@ai-sdk/openai-compatible`) |
-| Base URL | `http://localhost:11434/v1` |
-| API key | `ollama` (any value; local server, not a secret) |
-| Model | `ollama/codex` |
+- 🧠 **Runs fully offline** — no internet after setup
+- 💻 **Cross-platform** — Windows, Linux, macOS, Termux (Android)
+- 🔄 **Multi-model support** — DeepSeek, Qwen, CodeLlama (v1.2.0+)
+- 🌐 **Hybrid mode** — add Antigravity cloud models (v1.2.0+)
+- 🛡️ **Docker sandbox** — safe code testing
+- 🎭 **Custom persona** — CodeX, direct & no-nonsense
+- 🎨 **CLI banner** — figlet + lolcat (v1.2.0+)
+- 📚 **Full docs** — install guides, troubleshooting, FAQ
+- 🔌 **OpenAI-compatible** — works with OpenCode, LM Studio, etc.
 
 ---
 
 ## 📋 Requirements
 
-| Platform | Requirement |
-|----------|-------------|
-| Windows | Windows 10+, 8 GB RAM (16 GB recommended) |
-| Linux | Any modern distro, 8 GB RAM |
-| macOS | macOS 12+, 8 GB RAM |
-| Termux | Android 8+, 6 GB RAM (small model only) |
+| Platform | RAM | Disk | Notes |
+|----------|-----|------|-------|
+| **Windows** | 8 GB+ | 5 GB | Use `setup.ps1` |
+| **Linux** | 8 GB+ | 5 GB | Use `setup.sh` |
+| **macOS** | 8 GB+ | 5 GB | Use `setup.sh` |
+| **Termux** | 6 GB+ | 3 GB | Small models only, no Docker |
 
-> ⚠️ `deepseek-coder:6.7b` needs ~4 GB disk and 8 GB RAM minimum.
-> For low-end devices use `deepseek-coder:1.3b`.
+### Model sizes
+
+| Model | Size | RAM needed | Best for |
+|-------|------|------------|----------|
+| `deepseek-coder:6.7b` | 4 GB | 8 GB+ | Best quality |
+| `qwen2.5-coder:1.5b` | 1 GB | 4 GB+ | Low-RAM devices |
+| `codellama:7b` | 4 GB | 8 GB+ | Alternative |
+
+> ⚠️ `deepseek-coder:6.7b` needs ~4 GB disk and **8 GB RAM minimum**.
+> For low-end devices, use `qwen2.5-coder:1.5b`. Your toaster will thank you.
 
 ---
 
-## 🚀 Quick start
+## 🚀 Quick Start
 
 ### 🪟 Windows
 
 ```powershell
 winget install Ollama.Ollama
 ollama pull deepseek-coder:6.7b
-ollama create codex -f Modelfile
+git clone https://github.com/InfraSecID/CodeX.git
+cd CodeX
+Set-ExecutionPolicy -Scope Process Bypass
+.\setup.ps1
 ollama run codex
 ```
 
@@ -201,7 +76,10 @@ docker run -it --rm --network none -v ${PWD}:/work sandbox
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull deepseek-coder:6.7b
-ollama create codex -f Modelfile
+git clone https://github.com/InfraSecID/CodeX.git
+cd CodeX
+chmod +x setup.sh
+./setup.sh
 ollama run codex
 ```
 
@@ -214,8 +92,7 @@ docker run -it --rm --network none -v $(pwd):/work sandbox
 
 ### 📱 Termux (Android)
 
-> ⚠️ Termux cannot run Docker natively. Use the Ollama Termux fork with a small model.
-> Sandbox testing must be done on a PC.
+> ⚠️ Termux **cannot run Docker natively**. Use the Ollama Termux fork with a small model.
 
 ```bash
 pkg update && pkg upgrade -y
@@ -226,26 +103,203 @@ ollama-termux pull qwen2.5-coder:1.5b
 ollama-termux run qwen2.5-coder:1.5b
 ```
 
-Use small models (1.3b–1.5b) on Termux. Docker sandbox is not available there.
+**Note:** For Termux, use small models (`1.3b`–`1.5b`). Docker sandbox is **not available** — test code on a PC instead.
 
 ---
 
-## ⚡ Automated setup
+## 🔄 Multi-Model Support (v1.2.0+)
 
-- Linux / macOS: [`setup.sh`](./setup.sh) — `chmod +x setup.sh && ./setup.sh`
-- Windows: [`setup.ps1`](./setup.ps1) — `Set-ExecutionPolicy -Scope Process Bypass; .\setup.ps1`
+CodeX now supports multiple models. Switch anytime:
 
-Both install Ollama, pull the model, create the `codex` persona, and build the `sandbox` image.
+```bash
+./switch-model.sh qwen-1.5b
+```
+
+### Benchmark models
+
+```bash
+./benchmark.sh
+```
+
+### Add new model
+
+1. Create `models/your-model.Modelfile`
+2. Run `./switch-model.sh your-model`
+3. Update OpenCode config with `codex-your-model`
 
 ---
 
-## 🧪 Workflow
+## 🌐 Hybrid Mode — Antigravity Cloud (v1.2.0+)
 
-```text
-1. Type prompt in OpenCode → CodeX returns code
-2. Copy code → save in working folder
-3. Run inside Docker sandbox
-4. Inspect results — never run untrusted code on host
+Add **Google Antigravity** as cloud provider (optional, needs internet + Google account):
+
+```bash
+./setup-antigravity.sh
+opencode auth login
+```
+
+Then in OpenCode:
+- `/model` → pick `ollama/codex` (local, offline)
+- `/model` → pick `antigravity/gemini-3-pro` (cloud, online)
+
+### Local vs Cloud
+
+| Provider | Models | Connection | Use when |
+|----------|--------|------------|----------|
+| **Ollama** | codex, deepseek, qwen | **Offline** 🔒 | Privacy, no internet |
+| **Antigravity** | gemini, claude | **Online** 🌐 | Complex tasks, bigger models |
+
+> ⚠️ Antigravity is **unofficial plugin** (`opencode-antigravity-auth`). Use only in trusted workspaces.
+
+---
+
+## 🎨 CLI Banner (v1.2.0+)
+
+Run CodeX with a figlet banner:
+
+```bash
+./codex-cli.sh
+```
+
+Output:
+```
+  ____          _  __  __
+ / ___|___   __| | \ \/ /
+| |   / _ \ / _` |  \  /
+| |__| (_) | (_| |  /  \
+ \____\___/ \__,_| /_/\_\
+
+  🤖 Offline AI Coding Assistant
+  📡 Model: codex
+  🛡️  Sandbox: docker run ...
+  🌐 Hybrid: use Antigravity for cloud models
+```
+
+Install dependencies:
+```bash
+sudo apt install figlet lolcat
+```
+
+---
+
+## 🛠️ Makefile Shortcuts
+
+| Command | What it does |
+|---------|--------------|
+| `make setup` | Full setup (Ollama + model + persona + sandbox) |
+| `make run` | Chat with CodeX persona |
+| `make sandbox` | Start Docker sandbox (no internet) |
+| `make build-model` | Rebuild CodeX persona from Modelfile |
+| `make test` | Quick sanity test |
+| `make clean` | Remove build artifacts |
+| `make help` | Show all commands |
+
+Example:
+```bash
+make setup
+make run
+```
+
+---
+
+## 🐳 Docker Compose
+
+Run Ollama as a container:
+
+```bash
+docker compose up -d
+```
+
+Run sandbox with compose:
+
+```bash
+docker compose --profile sandbox run sandbox
+```
+
+Stop everything:
+
+```bash
+docker compose down
+```
+
+---
+
+## 🤖 CI/CD
+
+Every push to `main` triggers:
+- ShellCheck lint
+- YAML validation
+- Makefile validation
+- Executable permission check
+
+See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for details.
+
+---
+
+## 🔒 Pre-commit Hooks
+
+Install once:
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+Every `git commit` auto-checks:
+- Large files
+- Private keys
+- Merge conflicts
+- YAML validity
+- Shell script lint
+
+---
+
+## 📚 Documentation
+
+Full guides available in [`docs/`](docs/):
+
+| Guide | Description |
+|-------|-------------|
+| [Install on Windows](docs/install-windows.md) | Windows setup guide |
+| [Install on Linux](docs/install-linux.md) | Linux setup guide |
+| [Install on Termux](docs/install-termux.md) | Android/Termux guide |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues & fixes |
+| [FAQ](docs/FAQ.md) | Frequently asked questions |
+
+---
+
+## 📁 Repository Structure
+
+```
+codex/
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── RELEASE_NOTES.md
+├── Makefile
+├── docker-compose.yml
+├── Dockerfile
+├── Modelfile
+├── setup.sh
+├── setup.ps1
+├── setup-antigravity.sh
+├── switch-model.sh
+├── benchmark.sh
+├── codex-cli.sh
+├── split.py
+├── models/
+│   ├── deepseek-6.7b.Modelfile
+│   ├── qwen-1.5b.Modelfile
+│   └── codellama-7b.Modelfile
+├── docs/
+│   ├── install-windows.md
+│   ├── install-linux.md
+│   ├── install-termux.md
+│   ├── troubleshooting.md
+│   └── FAQ.md
+└── .github/
+    └── workflows/
+        └── ci.yml
 ```
 
 ---
@@ -254,48 +308,55 @@ Both install Ollama, pull the model, create the `codex` persona, and build the `
 
 | Problem | Fix |
 |---------|-----|
-| `ollama: command not found` | Reinstall, restart terminal. |
-| Model very slow | RAM too low — use `deepseek-coder:1.3b`. |
-| OpenCode not connecting | Check `ollama list`, verify URL `http://localhost:11434/v1`. |
-| Docker permission denied (Linux) | `sudo usermod -aG docker $USER`, then re-login. |
-| Docker can't mount folder (Windows) | Enable drive sharing in Docker Desktop settings. |
-| Termux: model too heavy | Use `qwen2.5-coder:1.5b` or smaller. |
-| Everything is on fire | Close terminal, breathe, try again. |
+| `ollama: command not found` | Reinstall, restart terminal |
+| Model very slow | RAM too low — use `./switch-model.sh qwen-1.5b` |
+| OpenCode not connecting | Check `curl http://localhost:11434/v1/models` |
+| Docker permission denied (Linux) | `sudo usermod -aG docker $USER`, then re-login |
+| Docker can't mount folder (Windows) | Enable drive sharing in Docker Desktop settings |
+| Termux: model too heavy | Use `qwen2.5-coder:1.5b` or smaller |
+| `switch-model.sh` permission denied | `chmod +x switch-model.sh benchmark.sh codex-cli.sh setup-antigravity.sh` |
+| `figlet: command not found` | `sudo apt install figlet` (Linux) or `brew install figlet` (macOS) |
+| Model not found | `ollama pull deepseek-coder:6.7b` |
+| Out of memory | Use smaller model, close other apps, increase swap |
+| `make help` fails | Makefile uses tabs, not spaces |
+| CI fails on ShellCheck | Add `severity: 'error'` to action config |
+| `YAML invalid` | `python3 -c "import yaml; yaml.safe_load(open('docker-compose.yml'))"` |
+| `setup.sh not executable` | `chmod +x setup.sh split.py` |
+| Docker image not built | `docker build -t sandbox .` |
+| Antigravity auth fails | `opencode auth login` again, check Google account |
+| Antigravity not showing in `/model` | Restart OpenCode after `setup-antigravity.sh` |
+
+For more, see [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ---
 
-## 🧪 Test prompts
+## 🔗 Links
 
-```text
-Test 1 — Python dasar:
-make a python script to scan ports 1-1024 on 127.0.0.1 using sockets, print only open ports
-
-Test 2 — Bash automation:
-make a bash script to back up ~/Documents to ~/Backup with a timestamp, skip if backup folder doesn't exist
-
-Test 3 — Security lab (defensive):
-make a python script to detect files with 777 permissions in /tmp, print filename + path
-
-Test 4 — Networking:
-make a python script to check HTTP response headers from a list of URLs, print status code + server header
-
-Test 5 — System programming:
-make a C program to read /proc/meminfo and print total RAM + free RAM in MB
-
-Test 6 — Stress test:
-make a script that monitors CPU usage and alerts if it goes above 90% for 60 seconds
-```
+- [Changelog](CHANGELOG.md)
+- [Release Notes](RELEASE_NOTES.md)
+- [Contributing](CONTRIBUTING.md)
+- [Issues](https://github.com/InfraSecID/CodeX/issues)
+- [Discussions](https://github.com/InfraSecID/CodeX/discussions)
+- [Releases](https://github.com/InfraSecID/CodeX/releases)
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is for educational and research purposes. Always test untrusted code inside the Docker sandbox. The author is not responsible for misuse.
+This project is for **educational and research purposes**.
+Always test untrusted code inside the Docker sandbox.
+Antigravity plugin is **unofficial** — use at your own risk.
+The author is not responsible for misuse. Don't be that guy. Seriously.
 
 ---
 
-## 📄 Footer
+## 📄 License
 
-- **Version:** 1.0
-- **License:** MIT — see [`LICENSE`](./LICENSE)
-- **Env template:** see [`.env.example`](./.env.example)
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+**Version:** 1.2.0
+**Last updated:** 2026-10-21
+**Made with:** ☕ + 🧠 + a GPU that's probably crying right now
+**Special thanks:** to everyone who reads documentation. You're the real MVP. 🏆
